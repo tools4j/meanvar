@@ -1,12 +1,14 @@
 apply plugin: 'java'
+apply plugin: 'license'
 
 sourceCompatibility = 1.7
-version = '1.0'
+group = "org.tools4j"
+version = '1.0.0'
+archivesBaseName = "tools4j-meanvar"
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'tools4j-meanvar',
-                   'Implementation-Version': version
+        attributes 'Implementation-Title': 'tools4j-meanvar', 'Implementation-Version': version
     }
 }
 
@@ -14,6 +16,57 @@ repositories {
     mavenCentral()
 }
 
+buildscript {
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+	
+	dependencies {
+		classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+	}
+}
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile 'junit:junit:4+'
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'build/repositories'
+       }
+    }
+}
+
+license {
+    header rootProject.file('src/main/resources/LICENSE.template')
+    strictCheck true
+	include "**/*.java"
+	ext.year = Calendar.getInstance().get(Calendar.YEAR)
+}
+
+compileJava.dependsOn licenseFormat
+
+javadoc {
+	options.showFromPackage()
+	options.linkSource()
+	options.links("http://docs.oracle.com/javase/8/docs/api/");
+	options.docTitle = "tools4j-meanvar API ${version}"
+	options.windowTitle = "tools4j-meanvar API ${version}"
+	options.overview = "src/main/java/overview.html";
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
 }
