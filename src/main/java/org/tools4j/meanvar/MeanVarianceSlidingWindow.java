@@ -100,6 +100,23 @@ public class MeanVarianceSlidingWindow {
 	}
 
 	/**
+	 * Returns the i-th (oldest) value currently present in the sliding window.
+	 * Returns {@link #getFirst()} for {@code i=0} and {@link #getLast()} for {@code i=(windowSize-1)}. 
+	 * Throws an exception if {@code i < 0} or if {@code i >= windowSize}.
+	 * 
+	 * @param i the zero-based index, must be in [0...(windowSize-1)]
+	 * @return the first (oldest) value in the sliding window
+	 * @throws IllegalArgumentException if {@code i < 0} or if {@code i >= windowSize}.
+	 * @see #getWindowSize()
+	 */
+	public double get(int i) {
+		if (i < 0 || i >= windowSize) {
+			throw new IndexOutOfBoundsException("index out of bounds: " + i + " not in [0.." + (windowSize-1) + "]");
+		}
+		return getCount() < windowSize ? window[i] : window[(i+k) % windowSize];
+	}
+
+	/**
 	 * Returns the mean value of the sample represented by this sliding window. Returns 0 if the sample count is zero.
 	 * <p>
 	 * The method returns the calculated value and returns immediately.
@@ -134,31 +151,59 @@ public class MeanVarianceSlidingWindow {
 	 * <p>
 	 * The method is based on calculated values and returns almost immediately (involves a simple division).
 	 * 
-	 * @return the variance of the sample
+	 * @return the variance of the sample (bias corrected)
 	 */
 	public double getVariance() {
 		return sampler.getVariance();
 	}
+	
+	/**
+	 * Returns the variance of the sample represented by this sliding window (using the {@code (n)} method). Returns NaN
+	 * if the sample count is zero.
+	 * <p>
+	 * The method is based on calculated values and returns almost immediately (involves a simple division).
+	 * 
+	 * @return the biased variance of the sample
+	 */
+	public double getVarianceBiased() {
+		return sampler.getVarianceBiased();
+	}
 
 	/**
 	 * Calculates the variance of the sample represented by this sliding window and returns it. The standard
-	 * {@code (n-1} method is used to calculate variance. Returns 0 if the sample count is zero, and Inf or NaN if count
+	 * {@code (n-1)} method is used to calculate variance. Returns 0 if the sample count is zero, and Inf or NaN if count
 	 * is 1.
 	 * <p>
 	 * Every method call recalculates the variance, a linear operation involving a constant multiple of the sample
 	 * {@link #getCount() count}.
 	 * 
-	 * @return the variance of the sample freshly calculated using the {@code (n-1)} method
+	 * @return the variance of the sample freshly calculated using the {@code (n-1)} method (bias corrected)
 	 */
 	public double calculateVarianceSimple() {
 		final long cnt = getCount();
+		return calculateVarianceSimple(cnt, cnt-1);
+	}
+	/**
+	 * Calculates the variance of the sample represented by this sliding window and returns it. The biased
+	 * {@code (n)} method is used to calculate variance. Returns NaN if the sample count is zero.
+	 * <p>
+	 * Every method call recalculates the variance, a linear operation involving a constant multiple of the sample
+	 * {@link #getCount() count}.
+	 * 
+	 * @return the variance of the sample freshly calculated using the biased {@code (n)} method
+	 */
+	public double calculateVarianceSimpleBiased() {
+		final long cnt = getCount();
+		return calculateVarianceSimple(cnt, cnt);
+	}
+	private double calculateVarianceSimple(final long cnt, final long div) {
 		final double mean = calculateMeanSimple();
 		double sum = 0;
 		for (int i = 0; i < cnt; i++) {
 			final double delta = window[i] - mean;
 			sum += delta * delta;
 		}
-		return sum / (cnt - 1);
+		return sum / div;
 	}
 
 	/**
@@ -168,24 +213,23 @@ public class MeanVarianceSlidingWindow {
 	 * The method is based on calculated values and returns almost immediately (involves a square root and division
 	 * operation).
 	 * 
-	 * @return the standard deviation of the sample
+	 * @return the standard deviation of the sample (bias corrected)
 	 */
 	public double getStdDev() {
 		return sampler.getStdDev();
 	}
 
 	/**
-	 * Calculates the standard deviation of the sample represented by this sliding window and returns it. The standard
-	 * {@code (n-1} method is used to calculate standard deviation. Returns 0 if the sample count is zero, and Inf or
-	 * NaN if count is 1.
+	 * Returns the standard deviation of the sample represented by this sliding window (using the biased {@code (n)} method).
+	 * Returns NaN if the sample count is zero.
 	 * <p>
-	 * Every method call recalculates the standard deviation, a linear operation involving a constant multiple of the
-	 * sample {@link #getCount() count}.
+	 * The method is based on calculated values and returns almost immediately (involves a square root and division
+	 * operation).
 	 * 
-	 * @return the standard deviation of the sample freshly calculated using the {@code (n-1)} method
+	 * @return the biased standard deviation of the sample
 	 */
-	public double calculateStdDevSimple() {
-		return Math.sqrt(calculateVarianceSimple());
+	public double getStdDevBiased() {
+		return sampler.getStdDevBiased();
 	}
 
 	/**

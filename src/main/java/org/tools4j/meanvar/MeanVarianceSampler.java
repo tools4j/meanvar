@@ -108,23 +108,46 @@ public class MeanVarianceSampler {
 	 * <p>
 	 * The method is based on calculated values and returns almost immediately (involves a simple division).
 	 * 
-	 * @return the variance of the sample
+	 * @return the variance of the sample (bias corrected)
 	 */
 	public double getVariance() {
 		return count > 0 ? s / (count - 1) : 0;// yes, this returns Inf if count==1
 	}
 
 	/**
-	 * Returns the standard deviation of the sample represented using the {@code (n-1)} method. Returns 0 if the sample
+	 * Returns the variance of the sample using the {@code (n)} method. Returns NaN if count is 0.
+	 * <p>
+	 * The method is based on calculated values and returns almost immediately (involves a simple division).
+	 * 
+	 * @return the biased variance of the sample
+	 */
+	public double getVarianceBiased() {
+		return s / count;// yes, this returns NaN if count==0
+	}
+
+	/**
+	 * Returns the standard deviation of the sample using the {@code (n-1)} method. Returns 0 if the sample
 	 * count is zero, and Inf or NaN if count is 1.
 	 * <p>
 	 * The method is based on calculated values and returns almost immediately (involves a square root and division
 	 * operation).
 	 * 
-	 * @return the standard deviation of the sample
+	 * @return the standard deviation of the sample (bias corrected)
 	 */
 	public double getStdDev() {
 		return Math.sqrt(getVariance());
+	}
+
+	/**
+	 * Returns the standard deviation of the sample using the {@code (n)} method. Returns NaN if count is 0.
+	 * <p>
+	 * The method is based on calculated values and returns almost immediately (involves a square root and division
+	 * operation).
+	 * 
+	 * @return the biased standard deviation of the sample
+	 */
+	public double getStdDevBiased() {
+		return Math.sqrt(getVarianceBiased());
 	}
 
 	/**
