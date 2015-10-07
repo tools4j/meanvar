@@ -27,7 +27,7 @@ package org.tools4j.meanvar;
  * Utility to incrementally calculate mean, variance and standard deviation of a sample. Sample points can be
  * {@link #add(double) added}, {@link #remove(double) removed} or {@link #replace(double, double) replaced}.
  * <p>
- * The implementation is based on the algorithm given in Knuth Vol 2, p 232.
+ * The implementation is based on Welford’s Algorithm given in Knuth Vol 2, p 232.
  */
 public class MeanVarianceSampler {
 	private long count;
@@ -56,6 +56,10 @@ public class MeanVarianceSampler {
 	public void remove(double x) {
 		if (count == 0) {
 			throw new IllegalStateException("sample is empty");
+		}
+		if (count == 1) {
+			reset();
+			return;
 		}
 		final double deltaOld = x - mean;
 		final double countMinus1 = count - 1;
@@ -123,8 +127,8 @@ public class MeanVarianceSampler {
 	}
 
 	/**
-	 * Returns the standard deviation of the sample using the {@code (n-1)} method. Returns 0 if the sample
-	 * count is zero, and Inf or NaN if count is 1.
+	 * Returns the standard deviation of the sample using the {@code (n-1)} method. Returns 0 if the sample count is
+	 * zero, and Inf or NaN if count is 1.
 	 * <p>
 	 * The method is based on calculated values and returns almost immediately (involves a square root and division
 	 * operation).
