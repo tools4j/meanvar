@@ -36,7 +36,6 @@ import java.util.Arrays;
  */
 public class MeanVarianceSlidingWindow {
 
-	private final int windowSize;
 	private final double[] window;
 	private final MeanVarianceSampler sampler;
 	private int k;
@@ -49,7 +48,6 @@ public class MeanVarianceSlidingWindow {
 	 *            the window size
 	 */
 	public MeanVarianceSlidingWindow(int n) {
-		this.windowSize = n;
 		this.window = new double[n];
 		this.sampler = new MeanVarianceSampler();
 	}
@@ -68,7 +66,7 @@ public class MeanVarianceSlidingWindow {
 	 */
 	public void update(double x) {
 		final long cnt = getCount();
-		if (cnt < windowSize) {
+		if (cnt < window.length) {
 			sampler.add(x);
 			window[k] = x;
 		} else {
@@ -76,7 +74,7 @@ public class MeanVarianceSlidingWindow {
 			sampler.replace(r, x);
 			window[k] = x;
 		}
-		k = (k + 1) % windowSize;
+		k = (k + 1) % window.length;
 	}
 
 	/**
@@ -86,7 +84,7 @@ public class MeanVarianceSlidingWindow {
 	 * @return the first (oldest) value in the sliding window
 	 */
 	public double getFirst() {
-		return getCount() < windowSize ? window[0] : window[k];
+		return getCount() < window.length ? window[0] : window[k];
 	}
 
 	/**
@@ -96,24 +94,24 @@ public class MeanVarianceSlidingWindow {
 	 * @return the last (newest) value in the sliding window
 	 */
 	public double getLast() {
-		return window[(k - 1 + windowSize) % windowSize];
+		return window[(k - 1 + window.length) % window.length];
 	}
 
 	/**
 	 * Returns the i-th (oldest) value currently present in the sliding window.
-	 * Returns {@link #getFirst()} for {@code i=0} and {@link #getLast()} for {@code i=(windowSize-1)}. 
-	 * Throws an exception if {@code i < 0} or if {@code i >= windowSize}.
+	 * Returns {@link #getFirst()} for {@code i=0} and {@link #getLast()} for {@code i=(window.length-1)}. 
+	 * Throws an exception if {@code i < 0} or if {@code i >= window.length}.
 	 * 
-	 * @param i the zero-based index, must be in [0...(windowSize-1)]
+	 * @param i the zero-based index, must be in [0...(window.length-1)]
 	 * @return the first (oldest) value in the sliding window
-	 * @throws IllegalArgumentException if {@code i < 0} or if {@code i >= windowSize}.
+	 * @throws IllegalArgumentException if {@code i < 0} or if {@code i >= window.length}.
 	 * @see #getWindowSize()
 	 */
 	public double get(int i) {
-		if (i < 0 || i >= windowSize) {
-			throw new IndexOutOfBoundsException("index out of bounds: " + i + " not in [0.." + (windowSize-1) + "]");
+		if (i < 0 || i >= window.length) {
+			throw new IndexOutOfBoundsException("index out of bounds: " + i + " not in [0.." + (window.length-1) + "]");
 		}
-		return getCount() < windowSize ? window[i] : window[(i+k) % windowSize];
+		return getCount() < window.length ? window[i] : window[(i+k) % window.length];
 	}
 
 	/**
@@ -128,21 +126,22 @@ public class MeanVarianceSlidingWindow {
 	}
 
 	/**
-	 * Calculates the mean value of the sample represented by this sliding window and returns it. The standard method to
-	 * calculate mean values is used. Returns 0 if the sample count is zero.
+	 * Calculates mean and variance by creating a new sampler and adding all values values in the window to the
+	 * sampler. This method is slow but known to be numerically stable and hence may may be used as a reference to 
+	 * compare with mean/variance values computed directly by this sliding window. 
 	 * <p>
-	 * Every method call recalculates the mean value, a linear operation involving a constant multiple of the sample
-	 * {@link #getCount() count}.
+	 * Every method call recalculates the sampler, which is a liner operation involving a constant multiple of
+	 * {@code min(windowLength, count)}.
 	 * 
-	 * @return the mean value of the sample freshly calculated using the standard algorithm
+	 * @return a new sampler with mean and variance calculated by adding all window values to the sampler
 	 */
-	public double calculateMeanSimple() {
-		final long cnt = getCount();
-		double sum = 0;
+	public MeanVarianceSampler calculateMeanVariance() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		final int cnt = (int)Math.min(window.length, getCount());
 		for (int i = 0; i < cnt; i++) {
-			sum += window[i];
+			sampler.add(window[i]);
 		}
-		return sum / cnt;
+		return sampler;
 	}
 
 	/**
@@ -167,43 +166,6 @@ public class MeanVarianceSlidingWindow {
 	 */
 	public double getVarianceBiased() {
 		return sampler.getVarianceBiased();
-	}
-
-	/**
-	 * Calculates the variance of the sample represented by this sliding window and returns it. The standard
-	 * {@code (n-1)} method is used to calculate variance. Returns 0 if the sample count is zero, and Inf or NaN if count
-	 * is 1.
-	 * <p>
-	 * Every method call recalculates the variance, a linear operation involving a constant multiple of the sample
-	 * {@link #getCount() count}.
-	 * 
-	 * @return the variance of the sample freshly calculated using the {@code (n-1)} method (bias corrected)
-	 */
-	public double calculateVarianceSimple() {
-		final long cnt = getCount();
-		return calculateVarianceSimple(cnt, cnt-1);
-	}
-	/**
-	 * Calculates the variance of the sample represented by this sliding window and returns it. The biased
-	 * {@code (n)} method is used to calculate variance. Returns NaN if the sample count is zero.
-	 * <p>
-	 * Every method call recalculates the variance, a linear operation involving a constant multiple of the sample
-	 * {@link #getCount() count}.
-	 * 
-	 * @return the variance of the sample freshly calculated using the biased {@code (n)} method
-	 */
-	public double calculateVarianceSimpleBiased() {
-		final long cnt = getCount();
-		return calculateVarianceSimple(cnt, cnt);
-	}
-	private double calculateVarianceSimple(final long cnt, final long div) {
-		final double mean = calculateMeanSimple();
-		double sum = 0;
-		for (int i = 0; i < cnt; i++) {
-			final double delta = window[i] - mean;
-			sum += delta * delta;
-		}
-		return sum / div;
 	}
 
 	/**
@@ -248,18 +210,17 @@ public class MeanVarianceSlidingWindow {
 	 * @return the window size
 	 */
 	public int getWindowSize() {
-		return windowSize;
+		return window.length;
 	}
 
 	/**
 	 * Resets this window to its initial state. The sample count is 0 after this operation.
 	 */
 	public void reset() {
-		if (getCount() > 0) {
-			Arrays.fill(window, 0);
-			k = 0;
-			sampler.reset();
-		}
+		final int end = (int)Math.min(window.length, getCount());
+		Arrays.fill(window, 0, end, 0d);
+		k = 0;
+		sampler.reset();
 	}
 
 	/**
@@ -270,7 +231,7 @@ public class MeanVarianceSlidingWindow {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[size=" + windowSize + ",count=" + getCount() + ",mean=" + getMean()
+		return getClass().getSimpleName() + "[size=" + window.length + ",count=" + getCount() + ",mean=" + getMean()
 				+ ",var=" + getVariance() + ",std=" + getStdDev() + "]";
 	}
 }

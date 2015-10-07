@@ -97,8 +97,9 @@ public class MeanVarianceRandomTest {
 			sampleRemoveAdd.add(x);
 
 			if (i >= WINDOW_SIZE && i < N - WINDOW_SIZE) {
-				final double refMean = winReplace.calculateMeanSimple();
-				final double refStd = Math.sqrt(winReplace.calculateVarianceSimple());
+				final MeanVarianceSampler ref = winReplace.calculateMeanVariance();
+				final double refMean = ref.getMean();
+				final double refStd = ref.getStdDev();
 				winReplaceMeanErr = Math.max(winReplaceMeanErr, Math.abs(winReplace.getMean() - refMean));
 				winReplaceStdErr = Math.max(winReplaceStdErr, Math.abs(winReplace.getStdDev() - refStd));
 				sampleAddRemoveMeanErr = Math.max(sampleAddRemoveMeanErr, Math.abs(sampleAddRemove.getMean() - refMean));

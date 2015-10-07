@@ -62,7 +62,6 @@ public class MeanVarianceSampler {
 		mean = count / countMinus1 * mean - x / countMinus1;
 		final double deltaNew = x - mean;
 		s -= deltaOld * deltaNew;
-		// s = s - count / countMinus1 * deltaOld * deltaOld;
 		count--;
 	}
 
@@ -87,8 +86,6 @@ public class MeanVarianceSampler {
 		final double deltaYp = y - mean;
 		final long countMinus1 = count - 1;
 		s = s - count * (deltaX * deltaX - deltaY * deltaYp) / countMinus1 - (deltaYX * deltaYp) / countMinus1;
-		// s = s - (count * deltaX * deltaX - count * deltaY * deltaYp) / countMinus1 - (deltaYX * deltaYp) /
-		// countMinus1;
 	}
 
 	/**
