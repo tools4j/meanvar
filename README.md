@@ -2,7 +2,7 @@
 Tiny Java utility to incrementally calculate Mean and Standard Deviation with a numerically stable algorithm. Contains a simple utility class to incrementally calculate moving average and moving standard deviation of a data series. 
 
 #### Examples
-##### MeanVarianceSampler
+###### MeanVarianceSampler
 ```java
 final MeanVarianceSampler sampler = new MeanVarianceSampler();
 sampler.add(1);
@@ -14,7 +14,7 @@ double var = sampler.getVariance();
 double stdDev = sampler.getStdDev();
 ```
 
-##### MeanVarianceSampler
+###### MeanVarianceSlidingWindow
 ```java
 final int windowSize = 3;
 final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
@@ -28,8 +28,6 @@ mean = win.getMean();
 var = win.getVariance();
 stdDev = win.getStdDev();
 
-//window is full
-		
 //1 drops out now
 win.update(4);
 mean = win.getMean();
