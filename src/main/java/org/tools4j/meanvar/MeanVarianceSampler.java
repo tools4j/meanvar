@@ -57,10 +57,6 @@ public class MeanVarianceSampler {
 		if (count == 0) {
 			throw new IllegalStateException("sample is empty");
 		}
-		if (count == 1) {
-			reset();
-			return;
-		}
 		final double deltaOld = x - mean;
 		final double countMinus1 = count - 1;
 		mean = count / countMinus1 * mean - x / countMinus1;
