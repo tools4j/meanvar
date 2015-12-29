@@ -67,73 +67,108 @@ public class MeanVarianceSlidingWindowTest {
 	}
 
 	@Test
-	public void shouldCalculateVar() {
+	public void shouldCalculateVarianceUnbiased() {
 		final int windowSize = 3;
 		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
 
-		Assert.assertEquals("unexpected Var", 0.0, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 0.0, win.getVarianceUnbiased(), TOLERANCE);
 
 		win.update(1);
-		Assert.assertFalse("unexpected Var", isFinite(win.getVariance()));
+		Assert.assertFalse("unexpected Var", isFinite(win.getVarianceUnbiased()));
 
 		win.update(2);
-		Assert.assertEquals("unexpected Var", 0.5, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 0.5, win.getVarianceUnbiased(), TOLERANCE);
 		
 		win.update(3);
-		Assert.assertEquals("unexpected Var", 1.0, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 1.0, win.getVarianceUnbiased(), TOLERANCE);
 		
 		//window is full
 		
 		//1 drops out now
 		win.update(4);
-		Assert.assertEquals("unexpected Var", 1.0, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 1.0, win.getVarianceUnbiased(), TOLERANCE);
 
 		//2 drops out now
 		win.update(5);
-		Assert.assertEquals("unexpected Var", 1.0, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 1.0, win.getVarianceUnbiased(), TOLERANCE);
 
 		//3 drops out now
 		win.update(-4.5);
-		Assert.assertEquals("unexpected Var", 27.25, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 27.25, win.getVarianceUnbiased(), TOLERANCE);
 
 		//4 drops out now
 		win.update(-0.5);
-		Assert.assertEquals("unexpected Var", 22.75, win.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 22.75, win.getVarianceUnbiased(), TOLERANCE);
 	}
 
 	@Test
-	public void shouldCalculateVarBiased() {
+	public void shouldCalculateVariance() {
 		final int windowSize = 3;
 		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
 
-		Assert.assertFalse("unexpected Biased Var", isFinite(win.getVarianceBiased()));
+		Assert.assertFalse("unexpected Biased Var", isFinite(win.getVariance()));
 
 		win.update(1);
-		Assert.assertEquals("unexpected Biased Var", 0, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 0, win.getVariance(), TOLERANCE);
 
 		win.update(2);
-		Assert.assertEquals("unexpected Biased Var", 0.25, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 0.25, win.getVariance(), TOLERANCE);
 		
 		win.update(3);
-		Assert.assertEquals("unexpected Biased Var", 2.0/3, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 2.0/3, win.getVariance(), TOLERANCE);
 		
 		//window is full
 		
 		//1 drops out now
 		win.update(4);
-		Assert.assertEquals("unexpected Biased Var", 2.0/3, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 2.0/3, win.getVariance(), TOLERANCE);
 
 		//2 drops out now
 		win.update(5);
-		Assert.assertEquals("unexpected Biased Var", 2.0/3, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 2.0/3, win.getVariance(), TOLERANCE);
 
 		//3 drops out now
 		win.update(-4.5);
-		Assert.assertEquals("unexpected Biased Var", 18.16666666666666667, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 18.16666666666666667, win.getVariance(), TOLERANCE);
 
 		//4 drops out now
 		win.update(-0.5);
-		Assert.assertEquals("unexpected Biased Var", 15.16666666666666667, win.getVarianceBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected Biased Var", 15.16666666666666667, win.getVariance(), TOLERANCE);
+	}
+
+	@Test
+	public void shouldCalculateStdDevUnbiased() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
+
+		Assert.assertEquals("unexpected StdDev", 0, win.getStdDevUnbiased(), TOLERANCE);
+
+		win.update(1);
+		Assert.assertFalse("unexpected StdDev", isFinite(win.getStdDevUnbiased()));
+
+		win.update(2);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(0.5), win.getStdDevUnbiased(), TOLERANCE);
+		
+		win.update(3);
+		Assert.assertEquals("unexpected StdDev", 1.0, win.getStdDevUnbiased(), TOLERANCE);
+		
+		//window is full
+		
+		//1 drops out now
+		win.update(4);
+		Assert.assertEquals("unexpected StdDev", 1.0, win.getStdDevUnbiased(), TOLERANCE);
+
+		//2 drops out now
+		win.update(5);
+		Assert.assertEquals("unexpected StdDev", 1.0, win.getStdDevUnbiased(), TOLERANCE);
+
+		//3 drops out now
+		win.update(-4.5);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(27.25), win.getStdDevUnbiased(), TOLERANCE);
+
+		//4 drops out now
+		win.update(-0.5);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(22.75), win.getStdDevUnbiased(), TOLERANCE);
 	}
 
 	@Test
@@ -141,69 +176,34 @@ public class MeanVarianceSlidingWindowTest {
 		final int windowSize = 3;
 		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
 
+		Assert.assertTrue("unexpected StdDev: " + win.getStdDev(), Double.isNaN(win.getStdDev()));
+
+		win.update(1);
 		Assert.assertEquals("unexpected StdDev", 0, win.getStdDev(), TOLERANCE);
 
-		win.update(1);
-		Assert.assertFalse("unexpected StdDev", isFinite(win.getStdDev()));
-
 		win.update(2);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(0.5), win.getStdDev(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(0.25), win.getStdDev(), TOLERANCE);
 		
 		win.update(3);
-		Assert.assertEquals("unexpected StdDev", 1.0, win.getStdDev(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(2.0/3), win.getStdDev(), TOLERANCE);
 		
 		//window is full
 		
 		//1 drops out now
 		win.update(4);
-		Assert.assertEquals("unexpected StdDev", 1.0, win.getStdDev(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(2.0/3), win.getStdDev(), TOLERANCE);
 
 		//2 drops out now
 		win.update(5);
-		Assert.assertEquals("unexpected StdDev", 1.0, win.getStdDev(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(2.0/3), win.getStdDev(), TOLERANCE);
 
 		//3 drops out now
 		win.update(-4.5);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(27.25), win.getStdDev(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(18.16666666666666667), win.getStdDev(), TOLERANCE);
 
 		//4 drops out now
 		win.update(-0.5);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(22.75), win.getStdDev(), TOLERANCE);
-	}
-
-	@Test
-	public void shouldCalculateStdDevBiased() {
-		final int windowSize = 3;
-		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
-
-		Assert.assertTrue("unexpected StdDev: " + win.getStdDevBiased(), Double.isNaN(win.getStdDevBiased()));
-
-		win.update(1);
-		Assert.assertEquals("unexpected StdDev", 0, win.getStdDevBiased(), TOLERANCE);
-
-		win.update(2);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(0.25), win.getStdDevBiased(), TOLERANCE);
-		
-		win.update(3);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(2.0/3), win.getStdDevBiased(), TOLERANCE);
-		
-		//window is full
-		
-		//1 drops out now
-		win.update(4);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(2.0/3), win.getStdDevBiased(), TOLERANCE);
-
-		//2 drops out now
-		win.update(5);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(2.0/3), win.getStdDevBiased(), TOLERANCE);
-
-		//3 drops out now
-		win.update(-4.5);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(18.16666666666666667), win.getStdDevBiased(), TOLERANCE);
-
-		//4 drops out now
-		win.update(-0.5);
-		Assert.assertEquals("unexpected StdDev", Math.sqrt(15.16666666666666667), win.getStdDevBiased(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", Math.sqrt(15.16666666666666667), win.getStdDev(), TOLERANCE);
 	}
 
 	@Test

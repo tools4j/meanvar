@@ -33,6 +33,8 @@ import java.util.Arrays;
  * <p>
  * The implementation uses {@link MeanVarianceSampler}; the calculations are based on Welford’s Algorithm given in Knuth
  * Vol 2, p 232.
+ * <p>
+ * This class is <i>NOT</i> thread safe. 
  */
 public class MeanVarianceSlidingWindow {
 
@@ -155,8 +157,8 @@ public class MeanVarianceSlidingWindow {
 	 * 
 	 * @return the variance of the sample (bias corrected)
 	 */
-	public double getVariance() {
-		return sampler.getVariance();
+	public double getVarianceUnbiased() {
+		return sampler.getVarianceUnbiased();
 	}
 
 	/**
@@ -167,8 +169,8 @@ public class MeanVarianceSlidingWindow {
 	 * 
 	 * @return the biased variance of the sample
 	 */
-	public double getVarianceBiased() {
-		return sampler.getVarianceBiased();
+	public double getVariance() {
+		return sampler.getVariance();
 	}
 
 	/**
@@ -180,8 +182,8 @@ public class MeanVarianceSlidingWindow {
 	 * 
 	 * @return the standard deviation of the sample (bias corrected)
 	 */
-	public double getStdDev() {
-		return sampler.getStdDev();
+	public double getStdDevUnbiased() {
+		return sampler.getStdDevUnbiased();
 	}
 
 	/**
@@ -193,8 +195,8 @@ public class MeanVarianceSlidingWindow {
 	 * 
 	 * @return the biased standard deviation of the sample
 	 */
-	public double getStdDevBiased() {
-		return sampler.getStdDevBiased();
+	public double getStdDev() {
+		return sampler.getStdDev();
 	}
 
 	/**

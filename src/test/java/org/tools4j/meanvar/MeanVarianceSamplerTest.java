@@ -44,23 +44,23 @@ public class MeanVarianceSamplerTest {
 	}
 
 	@Test
-	public void shouldCalculateVar() {
+	public void shouldCalculateVarianceUnbiased() {
 		final MeanVarianceSampler sampler = new MeanVarianceSampler();
 		sampler.add(1);
 		sampler.add(2);
 		sampler.add(3);
 		sampler.add(6);
-		Assert.assertEquals("unexpected Var", 4.666666666666667, sampler.getVariance(), TOLERANCE);
+		Assert.assertEquals("unexpected Var", 4.666666666666667, sampler.getVarianceUnbiased(), TOLERANCE);
 	}
 	
 	@Test
-	public void shouldCalculateStdDev() {
+	public void shouldCalculateStdDevUnbiased() {
 		final MeanVarianceSampler sampler = new MeanVarianceSampler();
 		sampler.add(1);
 		sampler.add(2);
 		sampler.add(3);
 		sampler.add(6);
-		Assert.assertEquals("unexpected StdDev", 2.160246899469287, sampler.getStdDev(), TOLERANCE);
+		Assert.assertEquals("unexpected StdDev", 2.160246899469287, sampler.getStdDevUnbiased(), TOLERANCE);
 	}
 	
 	@Test

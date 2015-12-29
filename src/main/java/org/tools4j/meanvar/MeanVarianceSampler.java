@@ -28,6 +28,8 @@ package org.tools4j.meanvar;
  * {@link #add(double) added}, {@link #remove(double) removed} or {@link #replace(double, double) replaced}.
  * <p>
  * The implementation is based on Welford’s Algorithm given in Knuth Vol 2, p 232.
+ * <p>
+ * This class is <i>NOT</i> thread safe. 
  */
 public class MeanVarianceSampler {
 	private long count;
@@ -107,7 +109,7 @@ public class MeanVarianceSampler {
 	 * 
 	 * @return the variance of the sample (bias corrected)
 	 */
-	public double getVariance() {
+	public double getVarianceUnbiased() {
 		return count > 0 ? s / (count - 1) : 0;// yes, this returns Inf if count==1
 	}
 
@@ -118,7 +120,7 @@ public class MeanVarianceSampler {
 	 * 
 	 * @return the biased variance of the sample
 	 */
-	public double getVarianceBiased() {
+	public double getVariance() {
 		return s / count;// yes, this returns NaN if count==0
 	}
 
@@ -131,8 +133,8 @@ public class MeanVarianceSampler {
 	 * 
 	 * @return the standard deviation of the sample (bias corrected)
 	 */
-	public double getStdDev() {
-		return Math.sqrt(getVariance());
+	public double getStdDevUnbiased() {
+		return Math.sqrt(getVarianceUnbiased());
 	}
 
 	/**
@@ -143,8 +145,8 @@ public class MeanVarianceSampler {
 	 * 
 	 * @return the biased standard deviation of the sample
 	 */
-	public double getStdDevBiased() {
-		return Math.sqrt(getVarianceBiased());
+	public double getStdDev() {
+		return Math.sqrt(getVariance());
 	}
 
 	/**
