@@ -1,6 +1,8 @@
 # tools4j-meanvar
 Tiny Java utility to incrementally calculate Mean and Standard Deviation with a numerically stable algorithm. Contains a simple utility class to incrementally calculate moving average and moving standard deviation of a data series. 
 
+The implementation is based on Welford’s Algorithm given in Knuth Vol 2, p 232.
+
 #### Examples
 ###### MeanVarianceSampler
 ```java
