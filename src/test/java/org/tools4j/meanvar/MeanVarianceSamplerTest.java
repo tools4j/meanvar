@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 tools4j.org (Marco Terzer)
+ * Copyright (c) 2015-2016 tools4j.org (Marco Terzer)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -72,5 +72,39 @@ public class MeanVarianceSamplerTest {
 			sampler.add(Math.random());
 		}
 		Assert.assertEquals("Unexpected count", n, sampler.getCount());
+	}
+
+	@Test
+	public void shouldReset() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		sampler.add(1);
+		sampler.add(2);
+		sampler.add(3);
+		sampler.add(6);
+		Assert.assertEquals("unexpected count before reset", 4, sampler.getCount());
+
+		sampler.reset();
+		Assert.assertEquals("unexpected count", 0, sampler.getCount());
+		Assert.assertEquals("unexpected mean", 0, sampler.getMean(), 0);
+		Assert.assertEquals("unexpected variance", Double.NaN, sampler.getVariance(), 0);
+	}
+
+	@Test
+	public void shouldCombine() {
+		final MeanVarianceSampler sampler1 = new MeanVarianceSampler();
+		final MeanVarianceSampler sampler2 = new MeanVarianceSampler();
+		sampler1.add(1);
+		sampler1.add(2);
+		sampler1.add(3);
+		sampler2.add(2);
+		sampler2.add(3);
+		sampler2.add(4);
+
+		final MeanVarianceSampler combined = sampler1.clone();
+		Assert.assertEquals("clone should be equal", sampler1, combined);
+		combined.combine(sampler2);
+		Assert.assertEquals("unexpected count", 6, combined.getCount());
+		Assert.assertEquals("unexpected mean", 2.5, combined.getMean(), TOLERANCE);
+		Assert.assertEquals("unexpected variance", 0.91666666666666667, combined.getVariance(), TOLERANCE);
 	}
 }

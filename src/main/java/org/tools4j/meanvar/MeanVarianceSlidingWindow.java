@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 tools4j.org (Marco Terzer)
+ * Copyright (c) 2015-2016 tools4j.org (Marco Terzer)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package org.tools4j.meanvar;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -36,7 +37,7 @@ import java.util.Arrays;
  * <p>
  * This class is <i>NOT</i> thread safe. 
  */
-public class MeanVarianceSlidingWindow {
+public class MeanVarianceSlidingWindow implements Cloneable, Serializable {
 
 	private final double[] window;
 	private final MeanVarianceSampler sampler;
@@ -52,6 +53,18 @@ public class MeanVarianceSlidingWindow {
 	public MeanVarianceSlidingWindow(int n) {
 		this.window = new double[n];
 		this.sampler = new MeanVarianceSampler();
+	}
+
+	/**
+	 * Constructor used by {@link #clone()} method.
+	 *
+	 * @param toCopy
+	 *            the sliding window to clone
+	 */
+	protected MeanVarianceSlidingWindow(MeanVarianceSlidingWindow toCopy) {
+		this.window = toCopy.window.clone();
+		this.sampler = toCopy.sampler.clone();
+		this.k = toCopy.k;
 	}
 
 	/**
@@ -226,6 +239,55 @@ public class MeanVarianceSlidingWindow {
 		Arrays.fill(window, 0, end, 0d);
 		k = 0;
 		sampler.reset();
+	}
+
+
+	/**
+	 * Returns a clone of this sliding window.
+	 *
+	 * @return a clone initialised with the state of this current sliding window.
+	 */
+	public MeanVarianceSlidingWindow clone() {
+		return new MeanVarianceSlidingWindow(this);
+	}
+
+	/**
+	 * Returns true if the specified object is a sliding window in the exact same
+	 * state as this sliding window.
+	 * <p>
+	 * Note that this method is not very efficient since it inspects all elements
+	 * of the window.
+	 *
+	 * @param o the object to be compared with
+	 * @return true if o is another sliding window with exactly the same state
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final MeanVarianceSlidingWindow that = (MeanVarianceSlidingWindow) o;
+
+		if (k != that.k) return false;
+		if (!Arrays.equals(window, that.window)) return false;
+		return sampler.equals(that.sampler);
+
+	}
+
+	/**
+	 * Returns a hash code based on this sliding window's state.
+	 * <p>
+	 * Note that this method is not very efficient since it inspects all elements
+	 * of the window.
+	 *
+	 * @return hash code based on sampler state.
+	 */
+	@Override
+	public int hashCode() {
+		int result = Arrays.hashCode(window);
+		result = 31 * result + sampler.hashCode();
+		result = 31 * result + k;
+		return result;
 	}
 
 	/**

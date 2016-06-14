@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 tools4j.org (Marco Terzer)
+ * Copyright (c) 2015-2016 tools4j.org (Marco Terzer)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,8 @@
  */
 package org.tools4j.meanvar;
 
+import java.io.Serializable;
+
 /**
  * Utility to incrementally calculate mean, variance and standard deviation of a sample. Sample points can be
  * {@link #add(double) added}, {@link #remove(double) removed} or {@link #replace(double, double) replaced}.
@@ -31,7 +33,8 @@ package org.tools4j.meanvar;
  * <p>
  * This class is <i>NOT</i> thread safe. 
  */
-public class MeanVarianceSampler {
+public class MeanVarianceSampler implements Cloneable, Serializable {
+
 	private long count;
 	private double mean, s;
 
@@ -165,6 +168,82 @@ public class MeanVarianceSampler {
 		count = 0;
 		mean = 0;
 		s = 0;
+	}
+
+	/**
+	 * Combines this sampler with the specified other sampler. After the operation, this sampler
+	 * reflects the combined mean, variance and standard deviation.
+	 * <p>
+	 * Combining samplers is sometimes useful e.g. if separate parts of a statistic are collected
+	 * on separate threads. The combine operation (maybe after calling clone) can be used to
+	 * calculate the combined statistics with a lower frequency (e.g. every 1000 data points).
+	 *
+	 * @param with the sampler with which this sampler is combined
+     */
+	public void combine(final MeanVarianceSampler with) {
+		//e.g. see https://en.wikipedia.org/wiki/Standard_deviation#Combining_standard_deviations
+		final long n1 = this.count;
+		final long n2 = with.count;
+		final double m1 = this.mean;
+		final double m2 = with.mean;
+		final double s1 = this.s;
+		final double s2 = with.s;
+		final long n = n1 + n2;
+		final double m = (n1 * m1 + n2 * m2) / n;
+		final double s = s1 + s2 + n1 * m1 * m1 + n2 * m2 * m2 - n * m * m;
+		this.count = n;
+		this.mean = m;
+		this.s = s;
+	}
+
+	/**
+	 * Returns a clone of this sampler.
+	 *
+	 * @return a clone initialised with the state of this current sampler.
+     */
+	public MeanVarianceSampler clone() {
+		try {
+			return (MeanVarianceSampler)super.clone();
+		} catch (final CloneNotSupportedException e) {
+			throw new RuntimeException("Should be Cloneable", e);
+		}
+	}
+
+	/**
+	 * Returns true if the specified object is a sampler in the exact same
+	 * state as this sampler.
+	 *
+	 * @param o the object to be compared with
+	 * @return true if o is another sampler with exactly the same state
+     */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final MeanVarianceSampler that = (MeanVarianceSampler) o;
+
+		if (count != that.count) return false;
+		if (Double.compare(that.mean, mean) != 0) return false;
+		return Double.compare(that.s, s) == 0;
+
+	}
+
+	/**
+	 * Returns a hash code based on this sampler's state.
+	 *
+	 * @return hash code based on sampler state.
+     */
+	@Override
+	public int hashCode() {
+		int result;
+		long temp;
+		result = (int) (count ^ (count >>> 32));
+		temp = Double.doubleToLongBits(mean);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(s);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		return result;
 	}
 
 	/**
