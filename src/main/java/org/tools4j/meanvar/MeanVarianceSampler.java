@@ -42,7 +42,7 @@ public class MeanVarianceSampler implements Cloneable, Serializable {
 	 * Adds the value {@code x} to the sample. The sample count is incremented by one by this operation,
 	 * 
 	 * @param x
-	 *            the value to remove
+	 *            the value to add
 	 */
 	public void add(double x) {
 		count++;
