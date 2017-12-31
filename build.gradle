@@ -1,5 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'license'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 sourceCompatibility = 1.7
 group = "org.tools4j"
@@ -24,6 +26,7 @@ buildscript {
 	
 	dependencies {
 		classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
+        	classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2"
 	}
 }
 
@@ -55,6 +58,13 @@ javadoc {
 	options.docTitle = "tools4j-meanvar API ${version}"
 	options.windowTitle = "tools4j-meanvar API ${version}"
 	options.overview = "src/main/java/overview.html";
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
 }
 
 task javadocJar(type: Jar) {
