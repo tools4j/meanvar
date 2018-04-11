@@ -5,7 +5,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 sourceCompatibility = 1.7
 group = "org.tools4j"
-version = '1.0.0'
+version = '1.1-SNAPSHOT'
 archivesBaseName = "tools4j-meanvar"
 
 jar {
@@ -26,7 +26,7 @@ buildscript {
 	
 	dependencies {
 		classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        	classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2"
+        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2"
 	}
 }
 
@@ -43,10 +43,15 @@ uploadArchives {
 }
 
 license {
-    header rootProject.file('src/main/resources/LICENSE.template')
+    header rootProject.file('src/main/templates/LICENSE.template')
     strictCheck true
-	include "**/*.java"
-	ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    sourceSets {
+        main {
+            java { include "**/*.java" }
+            resources { include "LICENSE.txt" }
+        }
+    }
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
 }
 
 compileJava.dependsOn licenseFormat
@@ -79,4 +84,69 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives javadocJar, sourcesJar
+}
+
+//snapshot first, then release:
+//gradle clean uploadArchives -Pupload -PossrhUsername=xxx -PossrhPassword=xxx
+if (project.hasProperty('upload')) {
+
+    allprojects {
+        apply plugin: 'signing'
+        apply plugin: 'maven'
+        apply plugin: 'io.codearte.nexus-staging'
+
+        // Signature of artifacts
+        signing {
+            sign configurations.archives
+        }
+
+        // OSSRH publication
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    beforeDeployment {
+                        MavenDeployment deployment -> signing.signPom(deployment)
+                    }
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+                    snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                        authentication(userName: ossrhUsername, password: ossrhPassword)
+                    }
+
+                    pom.project {
+                        name 'spockito'
+                        packaging 'jar'
+                        // optionally artifactId can be defined here
+                        description 'Tiny Java utility to incrementally calculate Mean and Standard Deviation with a numerically stable algorithm. Contains a simple utility class to incrementally calculate moving average and moving standard deviation of a data series.'
+                        url 'https://github.com/tools4j/meanvar'
+
+                        scm {
+                            connection 'scm:git:https://github.com/tools4j/meanvar.git'
+                            developerConnection 'scm:git:https://github.com/tools4j/meanvar.git'
+                            url 'https://github.com/tools4j/meanvar.git'
+                        }
+                        licenses {
+                            license {
+                                name 'MIT License'
+                                url 'http://opensource.org/licenses/MIT'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'terzerm'
+                                name 'Marco Terzer'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        nexusStaging {
+            username = ossrhUsername
+            password = ossrhPassword
+        }
+    }
 }
