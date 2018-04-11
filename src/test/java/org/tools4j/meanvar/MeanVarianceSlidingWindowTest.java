@@ -354,13 +354,13 @@ public class MeanVarianceSlidingWindowTest {
 	public void shouldToString() {
 		final int windowSize = 3;
 		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
-		Assert.assertEquals("empty window string", "MeanVarianceSlidingWindow[length=3,count=0,mean=0.0,var=NaN,std=NaN]", win.toString());
+		Assert.assertEquals("empty window string", "MeanVarianceSlidingWindow[size=3,count=0,mean=0.0,var=NaN,std=NaN]", win.toString());
 		win.update(1);
-		Assert.assertEquals("1-element samplers string", "MeanVarianceSlidingWindow[length=3,count=1,mean=1.0,var=0.0,std=0.0]", win.toString());
+		Assert.assertEquals("1-element samplers string", "MeanVarianceSlidingWindow[size=3,count=1,mean=1.0,var=0.0,std=0.0]", win.toString());
 		win.update(1);
 		win.update(4);
 		win.update(4);
-		Assert.assertEquals("empty samplers string", "MeanVarianceSlidingWindow[length=3,count=3,mean=3.0,var=2.0,std=1.4142135623730951]", win.toString());
+		Assert.assertEquals("empty samplers string", "MeanVarianceSlidingWindow[size=3,count=3,mean=3.0,var=2.0,std=1.4142135623730951]", win.toString());
 	}
 
     private static boolean isFinite(double d) {

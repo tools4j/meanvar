@@ -118,7 +118,7 @@ public class MeanVarianceSlidingWindow implements Cloneable, Serializable {
 	 * {@code i >= window.count}.
 	 * 
 	 * @param i
-	 *            the zero-based index, must be in [0...(window.length-1)]
+	 *            the zero-based index, must be in [0...(window.count-1)]
 	 * @return the first (oldest) value in the sliding window
 	 * @throws IllegalArgumentException
 	 *             if {@code i < 0} or if {@code i >= window.count}.
@@ -299,7 +299,7 @@ public class MeanVarianceSlidingWindow implements Cloneable, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[length=" + window.length + ",count=" + getCount() + ",mean=" + getMean()
+		return getClass().getSimpleName() + "[size=" + window.length + ",count=" + getCount() + ",mean=" + getMean()
 				+ ",var=" + getVariance() + ",std=" + getStdDev() + "]";
 	}
 }
