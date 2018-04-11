@@ -114,22 +114,23 @@ public class MeanVarianceSlidingWindow implements Cloneable, Serializable {
 
 	/**
 	 * Returns the i-th (oldest) value currently present in the sliding window. Returns {@link #getFirst()} for
-	 * {@code i=0} and {@link #getLast()} for {@code i=(window.length-1)}. Throws an exception if {@code i < 0} or if
-	 * {@code i >= window.length}.
+	 * {@code i=0} and {@link #getLast()} for {@code i=(window.count-1)}. Throws an exception if {@code i < 0} or if
+	 * {@code i >= window.count}.
 	 * 
 	 * @param i
 	 *            the zero-based index, must be in [0...(window.length-1)]
 	 * @return the first (oldest) value in the sliding window
 	 * @throws IllegalArgumentException
-	 *             if {@code i < 0} or if {@code i >= window.length}.
-	 * @see #getWindowSize()
+	 *             if {@code i < 0} or if {@code i >= window.count}.
+	 * @see #getCount()
 	 */
 	public double get(int i) {
-		if (i < 0 || i >= window.length) {
+		final long count = getCount();
+		if (i < 0 || i >= count) {
 			throw new IndexOutOfBoundsException(
-					"index out of bounds: " + i + " not in [0.." + (window.length - 1) + "]");
+					"index out of bounds: " + i + " not in " + (count == 0 ? "[]" : "[0.." + (count - 1) + "]"));
 		}
-		return getCount() < window.length ? window[i] : window[(i + k) % window.length];
+		return count < window.length ? window[i] : window[(i + k) % window.length];
 	}
 
 	/**
@@ -298,7 +299,7 @@ public class MeanVarianceSlidingWindow implements Cloneable, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[size=" + window.length + ",count=" + getCount() + ",mean=" + getMean()
+		return getClass().getSimpleName() + "[length=" + window.length + ",count=" + getCount() + ",mean=" + getMean()
 				+ ",var=" + getVariance() + ",std=" + getStdDev() + "]";
 	}
 }

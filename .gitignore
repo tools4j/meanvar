@@ -5,3 +5,5 @@
 .idea
 bin
 build
+gradle.properties
+out

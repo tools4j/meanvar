@@ -107,4 +107,73 @@ public class MeanVarianceSamplerTest {
 		Assert.assertEquals("unexpected mean", 2.5, combined.getMean(), TOLERANCE);
 		Assert.assertEquals("unexpected variance", 0.91666666666666667, combined.getVariance(), TOLERANCE);
 	}
+
+	@Test
+	public void shouldRemove() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		sampler.add(1);
+		sampler.add(2);
+		sampler.add(3);
+		sampler.add(4);
+		sampler.add(5);
+		sampler.add(6);
+		sampler.remove(4);
+		sampler.remove(5);
+		Assert.assertEquals("unexpected Mean", 3, sampler.getMean(), TOLERANCE);
+	}
+
+	@Test
+	public void shouldReplace() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		sampler.add(1);
+		sampler.add(2);
+		sampler.add(3);
+		sampler.add(4);
+		sampler.replace(4, 6);
+		Assert.assertEquals("unexpected Mean", 3, sampler.getMean(), TOLERANCE);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void shouldNotRemoveWhenEmpty() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		sampler.remove(4);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void shouldNotReplaceWhenEmpty() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		sampler.replace(2, 4);
+	}
+
+	@Test
+	public void shouldHashAndEqual() {
+		final MeanVarianceSampler sampler1 = new MeanVarianceSampler();
+		final MeanVarianceSampler sampler2 = new MeanVarianceSampler();
+		Assert.assertEquals("empty samplers should be equal", sampler1, sampler2);
+		Assert.assertEquals("empty samplers should have same hash", sampler1.hashCode(), sampler2.hashCode());
+		sampler1.add(1);
+		sampler2.add(1);
+		Assert.assertEquals("1-element samplers should be equal", sampler1, sampler2);
+		Assert.assertEquals("1-element samplers should have same hash", sampler1.hashCode(), sampler2.hashCode());
+		sampler1.add(1);
+		sampler1.add(4);
+		sampler2.add(0);
+		sampler2.replace(1, 3);
+		sampler2.add(3);
+		Assert.assertEquals("3-element samplers should be equal", sampler1, sampler2);
+		Assert.assertEquals("3-element samplers should have same hash", sampler1.hashCode(), sampler2.hashCode());
+		sampler2.add(10);
+		Assert.assertNotEquals("samplers should not be equal", sampler1, sampler2);
+	}
+
+	@Test
+	public void shouldToString() {
+		final MeanVarianceSampler sampler = new MeanVarianceSampler();
+		Assert.assertEquals("empty samplers string", "MeanVarianceSampler[count=0,mean=0.0,var=NaN,std=NaN]", sampler.toString());
+		sampler.add(1);
+		Assert.assertEquals("1-element samplers string", "MeanVarianceSampler[count=1,mean=1.0,var=0.0,std=0.0]", sampler.toString());
+		sampler.add(1);
+		sampler.add(4);
+		Assert.assertEquals("empty samplers string", "MeanVarianceSampler[count=3,mean=2.0,var=2.0,std=1.4142135623730951]", sampler.toString());
+	}
 }

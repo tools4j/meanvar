@@ -34,6 +34,13 @@ public class MeanVarianceSlidingWindowTest {
 	private static final double TOLERANCE = 1e-16;
 
 	@Test
+	public void shouldGetWindowSize() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
+		Assert.assertEquals("window size", windowSize, win.getWindowSize());
+	}
+
+	@Test
 	public void shouldCalculateMean() {
 		final int windowSize = 3;
 		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
@@ -276,6 +283,84 @@ public class MeanVarianceSlidingWindowTest {
 		for (int i = 0; i < vals.length; i++) {
 			Assert.assertEquals("unexpected " + i + "-th", vals[i], win.get(i), 0.0);
 		}
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void shouldNotGetWhenEmpty() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
+		win.get(0);
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void shouldNotGetNegativeIndex() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
+		win.update(1);
+		win.update(2);
+		win.update(3);
+		win.get(-1);
+	}
+
+	@Test
+	public void shouldClone() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
+		win.update(1);
+		win.update(2);
+		win.update(3);
+		final MeanVarianceSlidingWindow win2 = win.clone();
+		Assert.assertNotSame("clones not same object", win, win2);
+		Assert.assertEquals("clones are equal objects", win, win2);
+	}
+
+	@Test
+	public void shouldReset() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win1 = new MeanVarianceSlidingWindow(windowSize);
+		final MeanVarianceSlidingWindow win2 = new MeanVarianceSlidingWindow(windowSize);
+		win1.update(1);
+		win1.update(2);
+		win1.update(3);
+		Assert.assertEquals("count is 3", 3, win1.getCount());
+		win1.reset();
+		Assert.assertEquals("count is 0", 0, win1.getCount());
+		Assert.assertEquals("win1 same as empty one", win1, win2);
+	}
+
+	@Test
+	public void shouldHashAndEqual() {
+		final MeanVarianceSlidingWindow win3a = new MeanVarianceSlidingWindow(3);
+		final MeanVarianceSlidingWindow win3b = new MeanVarianceSlidingWindow(3);
+		final MeanVarianceSlidingWindow win4 = new MeanVarianceSlidingWindow(4);
+		Assert.assertEquals("empty same length windows should be equal", win3a, win3b);
+		Assert.assertEquals("empty same length windows should have same hash", win3a.hashCode(), win3b.hashCode());
+		Assert.assertNotEquals("empty different length windows should not be equal", win3a, win4);
+		win3a.update(1);
+		win3b.update(1);
+		Assert.assertEquals("1-element windows should be equal", win3a, win3b);
+		Assert.assertEquals("1-element windows should have same hash", win3a.hashCode(), win3b.hashCode());
+		win3a.update(2);
+		win3a.update(3);
+		win3b.update(2);
+		win3b.update(3);
+		Assert.assertEquals("3-element windows should be equal", win3a, win3b);
+		Assert.assertEquals("3-element windows should have same hash", win3a.hashCode(), win3b.hashCode());
+		win3b.update(10);
+		Assert.assertNotEquals("windows should not be equal", win3a, win3b);
+	}
+
+	@Test
+	public void shouldToString() {
+		final int windowSize = 3;
+		final MeanVarianceSlidingWindow win = new MeanVarianceSlidingWindow(windowSize);
+		Assert.assertEquals("empty window string", "MeanVarianceSlidingWindow[length=3,count=0,mean=0.0,var=NaN,std=NaN]", win.toString());
+		win.update(1);
+		Assert.assertEquals("1-element samplers string", "MeanVarianceSlidingWindow[length=3,count=1,mean=1.0,var=0.0,std=0.0]", win.toString());
+		win.update(1);
+		win.update(4);
+		win.update(4);
+		Assert.assertEquals("empty samplers string", "MeanVarianceSlidingWindow[length=3,count=3,mean=3.0,var=2.0,std=1.4142135623730951]", win.toString());
 	}
 
     private static boolean isFinite(double d) {
