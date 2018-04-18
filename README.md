@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/tools4j/meanvar.svg?branch=master)](https://travis-ci.org/tools4j/meanvar)
 [![Coverage Status](https://coveralls.io/repos/github/tools4j/meanvar/badge.svg?branch=master)](https://coveralls.io/github/tools4j/meanvar?branch=master)
+[![Maven Central](https://img.shields.io/maven-central/v/org.tools4j/tools4j-meanvar.svg)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22tools4j-meanvar%22)
 
 # tools4j-meanvar
 Tiny Java utility to incrementally calculate Mean and Standard Deviation with a numerically stable algorithm. Contains a simple utility class to incrementally calculate moving average and moving standard deviation of a data series. 
@@ -58,6 +59,31 @@ mean = win.getMean();
 var = win.getVariance();
 stdDev = win.getStdDev();
 ```
+
+#### Maven
+Add the following dependency to your maven pom.xml file:
+
+```xml
+<dependency>
+    <groupId>org.tools4j</groupId>
+    <artifactId>tools4j-meanvar</artifactId>
+    <version>1.1</version>
+</dependency>
+```
+
+#### Gradle
+Add the following entry to the dependencies section in your build.gradle file:
+
+```gradle
+dependencies {
+    compile 'org.tools4j:tools4j-meanvar:1.1'
+}
+```
+
+#### Download
+Sources and binaries can be downloaded from maven central:
+* [tools4j-meanvar](http://search.maven.org/#search%7Cga%7C1%7Ctools4j-meanvar) in Maven Central
+
 
 #### More Information
 * [MIT License](https://github.com/tools4j/meanvar/blob/master/LICENSE)
