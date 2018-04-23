@@ -116,7 +116,7 @@ if (project.hasProperty('upload')) {
                     }
 
                     pom.project {
-                        name 'spockito'
+                        name "${archivesBaseName}"
                         packaging 'jar'
                         // optionally artifactId can be defined here
                         description 'Tiny Java utility to incrementally calculate Mean and Standard Deviation with a numerically stable algorithm. Contains a simple utility class to incrementally calculate moving average and moving standard deviation of a data series.'
