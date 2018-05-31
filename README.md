@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/tools4j/meanvar.svg?branch=master)](https://travis-ci.org/tools4j/meanvar)
 [![Coverage Status](https://coveralls.io/repos/github/tools4j/meanvar/badge.svg?branch=master)](https://coveralls.io/github/tools4j/meanvar?branch=master)
 [![Maven Central](https://img.shields.io/maven-central/v/org.tools4j/tools4j-meanvar.svg)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22tools4j-meanvar%22)
+[![Javadocs](http://www.javadoc.io/badge/org.tools4j/tools4j-meanvar.svg)](http://www.javadoc.io/doc/org.tools4j/tools4j-meanvar)
 
 # tools4j-meanvar
 Tiny Java utility to incrementally calculate Mean and Standard Deviation with a numerically stable algorithm. Contains a simple utility class to incrementally calculate moving average and moving standard deviation of a data series. 
@@ -84,6 +85,8 @@ dependencies {
 Sources and binaries can be downloaded from maven central:
 * [tools4j-meanvar](http://search.maven.org/#search%7Cga%7C1%7Ctools4j-meanvar) in Maven Central
 
+### API Javadoc
+[![Javadocs](http://javadoc.io/badge/org.tools4j/tools4j-meanvar.svg)](http://javadoc.io/doc/org.tools4j/tools4j-meanvar)
 
 #### More Information
 * [MIT License](https://github.com/tools4j/meanvar/blob/master/LICENSE)
