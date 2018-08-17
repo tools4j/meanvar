@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/tools4j/meanvar.svg?branch=master)](https://travis-ci.org/tools4j/meanvar)
 [![Coverage Status](https://coveralls.io/repos/github/tools4j/meanvar/badge.svg?branch=master)](https://coveralls.io/github/tools4j/meanvar?branch=master)
-[![Maven Central](https://img.shields.io/maven-central/v/org.tools4j/tools4j-meanvar.svg)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22tools4j-meanvar%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.tools4j/tools4j-meanvar.svg)](https://search.maven.org/search?q=a:tools4j-meanvar)
 [![Javadocs](http://www.javadoc.io/badge/org.tools4j/tools4j-meanvar.svg)](http://www.javadoc.io/doc/org.tools4j/tools4j-meanvar)
 
 # tools4j-meanvar
