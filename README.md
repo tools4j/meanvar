@@ -83,7 +83,7 @@ dependencies {
 
 #### Download
 Sources and binaries can be downloaded from maven central:
-* [tools4j-meanvar](http://search.maven.org/#search%7Cga%7C1%7Ctools4j-meanvar) in Maven Central
+* [tools4j-meanvar](https://search.maven.org/search?q=a:tools4j-meanvar) in Maven Central
 
 ### API Javadoc
 [![Javadocs](http://javadoc.io/badge/org.tools4j/tools4j-meanvar.svg)](http://javadoc.io/doc/org.tools4j/tools4j-meanvar)
