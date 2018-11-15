@@ -3,6 +3,7 @@
 .project
 .settings
 .idea
+*.iml
 bin
 build
 gradle.properties

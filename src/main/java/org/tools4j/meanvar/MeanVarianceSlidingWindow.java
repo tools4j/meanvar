@@ -113,13 +113,13 @@ public class MeanVarianceSlidingWindow implements Cloneable, Serializable {
 	}
 
 	/**
-	 * Returns the i-th (oldest) value currently present in the sliding window. Returns {@link #getFirst()} for
+	 * Returns the i-th oldest value currently present in the sliding window. Returns {@link #getFirst()} for
 	 * {@code i=0} and {@link #getLast()} for {@code i=(window.count-1)}. Throws an exception if {@code i < 0} or if
 	 * {@code i >= window.count}.
 	 * 
 	 * @param i
 	 *            the zero-based index, must be in [0...(window.count-1)]
-	 * @return the first (oldest) value in the sliding window
+	 * @return the i-th oldest value in the sliding window
 	 * @throws IllegalArgumentException
 	 *             if {@code i < 0} or if {@code i >= window.count}.
 	 * @see #getCount()
