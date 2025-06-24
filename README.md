@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/tools4j/meanvar.svg?branch=master)](https://travis-ci.org/tools4j/meanvar)
 [![Coverage Status](https://coveralls.io/repos/github/tools4j/meanvar/badge.svg?branch=master)](https://coveralls.io/github/tools4j/meanvar?branch=master)
-[![Maven Central](https://img.shields.io/maven-central/v/org.tools4j/tools4j-meanvar.svg)](https://search.maven.org/search?q=a:tools4j-meanvar)
+[![Maven Central](https://img.shields.io/maven-central/v/org.tools4j/tools4j-meanvar.svg)](https://maven.org/search?q=a:tools4j-meanvar)
 [![Javadocs](http://www.javadoc.io/badge/org.tools4j/tools4j-meanvar.svg)](http://www.javadoc.io/doc/org.tools4j/tools4j-meanvar)
 
 # tools4j-meanvar
@@ -83,7 +83,7 @@ dependencies {
 
 #### Download
 Sources and binaries can be downloaded from maven central:
-* [tools4j-meanvar](https://search.maven.org/search?q=a:tools4j-meanvar) in Maven Central
+* [tools4j-meanvar](https://maven.org/search?q=a:tools4j-meanvar) in Maven Central
 
 ### API Javadoc
 [![Javadocs](http://javadoc.io/badge/org.tools4j/tools4j-meanvar.svg)](http://javadoc.io/doc/org.tools4j/tools4j-meanvar)
